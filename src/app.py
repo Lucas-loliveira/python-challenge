@@ -4,11 +4,6 @@ from flask import Flask, jsonify, request
 app = Flask(__name__)
 
 
-@app.route("/")
-def index():
-    return "Hello test flask home page CI pull request"
-
-
 @app.route("/git_update", methods=["POST"])
 def git_update():
     repo = git.Repo("./python-challenge")
