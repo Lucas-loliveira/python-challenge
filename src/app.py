@@ -1,3 +1,4 @@
+import git
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -6,6 +7,17 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     return "Hello test flask home page"
+
+
+@app.route("/git_update", methods=["POST"])
+def git_update():
+    repo = git.Repo("./python-challenge")
+    origin = repo.remotes.origin
+    repo.create_head("main", origin.refs.main).set_tracking_branch(
+        origin.refs.main
+    ).checkout()
+    origin.pull()
+    return "", 200
 
 
 @app.route("/vowel_count", methods=["POST"])

@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 flask = "*"
+gitpython = "*"
 
 [dev-packages]
 flake8 = "*"
