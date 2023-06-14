@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Hello test flask home page"
+    return "Hello test flask home page change"
 
 
 @app.route("/git_update", methods=["POST"])
