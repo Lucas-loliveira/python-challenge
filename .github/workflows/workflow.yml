@@ -1,0 +1,32 @@
+name: SouPilar App CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python "3.8"
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+
+
+      - name: Build and run Docker Compose
+        run: |
+          docker-compose build
+          docker-compose up -d
+
+      - name: Lint
+        run: docker-compose exec -T api flake8 .
+
+      - name: Run tests
+        run: docker-compose exec -T api python -m unittest discover -s tests
