@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    command: flask --app src/app run --host=0.0.0.0 --debug 
+    volumes:
+      - .:/code
+    ports:
+      - 5000:5000
