@@ -39,7 +39,9 @@ def count_vowels():
     data = request.get_json()
     result = {}
     for word in data["words"]:
-        vowel_count = sum(1 for char in word.lower() if char in "aeiou")
+        vowel_count = sum(
+            1 for char in word.lower() if char in "aeiouáéíóúãõâêîôûàèìòùäëïöü"
+        )
         result[word] = vowel_count
 
     return jsonify(result)
