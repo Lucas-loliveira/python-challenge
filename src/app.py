@@ -1,14 +1,22 @@
-import flask
 import git
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, make_response, render_template, request
 from flask_expects_json import expects_json
 from flask_restful import Api, Resource
 from flask_swagger import swagger
+from jsonschema import ValidationError
 
 from src.schema import SORT_SCHEMA, VOWEL_COUNT_SCHEMA
 
 app = Flask(__name__)
 api = Api(app)
+
+
+@app.errorhandler(400)
+def bad_request(error):
+    if isinstance(error.description, ValidationError):
+        original_error = error.description
+        return make_response(jsonify({"error": original_error.message}), 400)
+    return error
 
 
 @api.resource("/git_update")

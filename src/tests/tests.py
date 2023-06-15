@@ -24,8 +24,9 @@ class APITestCase(unittest.TestCase):
         response = self.app.post(
             "/api/vowel_count", data=json.dumps(data), content_type="application/json"
         )
-
         self.assertEqual(response.status_code, 400)
+        result = json.loads(response.data)
+        self.assertIn("error", result)
 
     def test_sort_asc(self):
         data = {"words": ["batman", "robin", "coringa"], "order": "asc"}
@@ -51,3 +52,5 @@ class APITestCase(unittest.TestCase):
             "/api/sort", data=json.dumps(data), content_type="application/json"
         )
         self.assertEqual(response.status_code, 400)
+        result = json.loads(response.data)
+        self.assertIn("error", result)
