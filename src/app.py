@@ -1,52 +1,127 @@
+import flask
 import git
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
+from flask_expects_json import expects_json
+from flask_restful import Api, Resource
+from flask_swagger import swagger
+
+from src.schema import SORT_SCHEMA, VOWEL_COUNT_SCHEMA
 
 app = Flask(__name__)
+api = Api(app)
 
 
-@app.route("/git_update", methods=["POST"])
-def git_update():
-    repo = git.Repo("./python-challenge")
-    origin = repo.remotes.origin
-    repo.create_head("main", origin.refs.main).set_tracking_branch(
-        origin.refs.main
-    ).checkout()
-    origin.pull()
-    return "", 200
+@api.resource("/git_update")
+class GitUpdateResource(Resource):
+    def post(self):
+        """
+        Update Git Repository
+
+        Update the local Git repository by pulling changes from the remote origin.
+
+        ---
+        responses:
+            200:
+                description: Success
+        """
+        repo = git.Repo("./python-challenge")
+        origin = repo.remotes.origin
+        repo.create_head("main", origin.refs.main).set_tracking_branch(
+            origin.refs.main
+        ).checkout()
+        origin.pull()
+        return "", 200
 
 
-@app.route("/vowel_count", methods=["POST"])
-def count_vowels():
-    if request.content_type != "application/json":
-        return jsonify({"error": "Content type must be application/json"}), 400
+@api.resource("/api/vowel_count")
+class VowelCountResource(Resource):
+    @expects_json(VOWEL_COUNT_SCHEMA)
+    def post(self):
+        """
+        Count Vowels
 
-    data = request.get_json()
-    if "words" not in data or not isinstance(data["words"], list):
-        return jsonify({"error": "Invalid request data"}), 400
+        Count the number of vowels in the provided list of words.
 
-    result = {}
-    for word in data["words"]:
-        vowel_count = sum(1 for char in word.lower() if char in "aeiou")
-        result[word] = vowel_count
+        ---
+        consumes:
+          - application/json
+        parameters:
+          - in: body
+            name: data
+            required: true
+            schema:
+              type: object
+              properties:
+                words:
+                  type: array
+                  items:
+                    type: string
+        responses:
+          200:
+            description: Success
+          400:
+            description: Bad Request
+        """
+        data = request.get_json()
+        result = {}
+        for word in data["words"]:
+            vowel_count = sum(1 for char in word.lower() if char in "aeiou")
+            result[word] = vowel_count
 
-    return jsonify(result)
+        return jsonify(result)
 
 
-@app.route("/sort", methods=["POST"])
-def sort_words():
-    if request.content_type != "application/json":
-        return jsonify({"error": "Content type must be application/json"}), 400
+@api.resource("/api/sort")
+class SortResource(Resource):
+    @expects_json(SORT_SCHEMA)
+    def post(self):
+        """
+        Sort Words
 
-    data = request.get_json()
-    if "words" not in data or not isinstance(data["words"], list):
-        return jsonify({"error": "Invalid request data"}), 400
+        Sort the provided list of words in ascending or descending order.
 
-    order = data.get("order", "asc")
-    if order not in ["asc", "desc"]:
-        return jsonify({"error": "Invalid sort order"}), 400
+        ---
+        consumes:
+          - application/json
+        parameters:
+          - in: body
+            name: data
+            required: true
+            schema:
+              type: object
+              properties:
+                words:
+                  type: array
+                  items:
+                    type: string
+                order:
+                  type: string
+                  enum: [asc, desc]
+                  default: asc
+        responses:
+          200:
+            description: Success
+          400:
+            description: Bad Request
+        """
+        data = request.get_json()
+        order = data.get("order", "asc")
 
-    sorted_words = sorted(data["words"], reverse=(order == "desc"))
-    return jsonify(sorted_words)
+        sorted_words = sorted(data["words"], reverse=(order == "desc"))
+        return jsonify(sorted_words)
+
+
+@app.route("/api/docs")
+def swagger_ui():
+    return render_template("swaggerui.html")
+
+
+@app.route("/api/spec")
+def spec():
+    swag = swagger(app)
+    swag["info"]["version"] = "1.0"
+    swag["info"]["title"] = "My API"
+    return jsonify(swag)
 
 
 if __name__ == "__main__":

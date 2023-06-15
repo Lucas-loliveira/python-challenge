@@ -13,7 +13,7 @@ class APITestCase(unittest.TestCase):
     def test_vowel_count(self):
         data = {"words": ["batman", "robin", "coringa"]}
         response = self.app.post(
-            "/vowel_count", data=json.dumps(data), content_type="application/json"
+            "/api/vowel_count", data=json.dumps(data), content_type="application/json"
         )
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
@@ -22,16 +22,15 @@ class APITestCase(unittest.TestCase):
     def test_vowel_count_invalid_request(self):
         data = {"invalid_key": ["batman", "robin", "coringa"]}
         response = self.app.post(
-            "/vowel_count", data=json.dumps(data), content_type="application/json"
+            "/api/vowel_count", data=json.dumps(data), content_type="application/json"
         )
+
         self.assertEqual(response.status_code, 400)
-        result = json.loads(response.data)
-        self.assertIn("error", result)
 
     def test_sort_asc(self):
         data = {"words": ["batman", "robin", "coringa"], "order": "asc"}
         response = self.app.post(
-            "/sort", data=json.dumps(data), content_type="application/json"
+            "/api/sort", data=json.dumps(data), content_type="application/json"
         )
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
@@ -40,7 +39,7 @@ class APITestCase(unittest.TestCase):
     def test_sort_desc(self):
         data = {"words": ["batman", "robin", "coringa"], "order": "desc"}
         response = self.app.post(
-            "/sort", data=json.dumps(data), content_type="application/json"
+            "/api/sort", data=json.dumps(data), content_type="application/json"
         )
         self.assertEqual(response.status_code, 200)
         result = json.loads(response.data)
@@ -49,8 +48,6 @@ class APITestCase(unittest.TestCase):
     def test_sort_invalid_order(self):
         data = {"words": ["batman", "robin", "coringa"], "order": "invalid"}
         response = self.app.post(
-            "/sort", data=json.dumps(data), content_type="application/json"
+            "/api/sort", data=json.dumps(data), content_type="application/json"
         )
         self.assertEqual(response.status_code, 400)
-        result = json.loads(response.data)
-        self.assertIn("error", result)
