@@ -9,6 +9,7 @@ gitpython = "*"
 flask-restful = "*"
 flask-swagger = "*"
 flask-expects-json = "*"
+gunicorn = "*"
 
 [dev-packages]
 flake8 = "*"
