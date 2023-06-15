@@ -35,16 +35,14 @@ def count_vowels():
       400:
         description: Bad Request
     """
-    try:
-        data = request.get_json()
-        result = {}
-        for word in data["words"]:
-            vowel_count = sum(1 for char in word.lower() if char in "aeiou")
-            result[word] = vowel_count
 
-        return jsonify(result)
-    except ValidationError as error:
-        return jsonify({"error": error.message}), 400
+    data = request.get_json()
+    result = {}
+    for word in data["words"]:
+        vowel_count = sum(1 for char in word.lower() if char in "aeiou")
+        result[word] = vowel_count
+
+    return jsonify(result)
 
 
 @words_blueprint.route("/api/sort", methods=["POST"])
