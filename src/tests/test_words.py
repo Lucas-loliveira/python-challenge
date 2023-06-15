@@ -5,7 +5,7 @@ from app import app
 from flask import Flask
 
 
-class APITestCase(unittest.TestCase):
+class WordsAPITestCase(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
         self.app.testing = True
